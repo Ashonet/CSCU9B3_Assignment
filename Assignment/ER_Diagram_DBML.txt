@@ -1,0 +1,86 @@
+// Define the Musicians table
+Table Musicians_Table {
+  musician_ID int(PK,4) [primary key, note: "Unique identifier for each musician"]
+  name varchar(30) [note: "Full name of the musician"]
+  birth_date date [note: "Date of birth of each musician"]
+  experience varchar(20) [note: "Experience level (e.g., 'Professional', 'Amateur')"]
+}
+
+// Define the Bands table
+Table Bands_Table {
+  band_ID int(PK,2) [primary key, note: "Unique identifier for each band"]
+  band_name varchar(50) [note: "Name of the band"]
+  genre varchar(20) [note: "Genre of the band's music (e.g., Jazz, Classical)"]
+  formation_year year [note: "Year the band was formed"]
+  manager_phone varchar(15) [note: "Contact phone number for the band manager"]
+  manager_email varchar(30) [note: "Email address for the band's manager"]
+}
+
+// Define the Musician_Band junction table
+Table Musician_Band_Table {
+  musician_ID int(FK,4) [note: "Foreign key referencing Musicians"]
+  band_ID int(FK,2) [note: "Foreign key referencing Bands"]
+}
+
+// Define the Events table
+Table Events_Table {
+  event_ID int(PK,4) [primary key, note: "Unique identifier for each event"]
+  event_date date [note: "Date of the event"]
+  theme varchar(50) [note: "Theme of the event (e.g., Jazz Night)"]
+  audience_size int(3) [note: "Number of attendees"]
+  venue_ID int(FK,4) [note: "Foreign key referencing Venues"]
+}
+
+// Define the Venue table
+Table Venue_Table {
+  venue_ID int(PK,1) [primary key, note: "Unique identifier for each venue"]
+  venue_name varchar(20) [note: "Name of the venue"]
+}
+
+// Define the Band_Performance table
+Table Band_Performance_Table {
+  performance_ID int(PK,4) [primary key, note: "Unique identifier for each performance"]
+  band_ID int(FK,2) [note: "Foreign key referencing Bands"]
+  event_ID int(FK,4) [note: "Foreign key referencing Events"]
+  is_headliner boolean [note: "Indicates if band was the headliner"]
+}
+
+// Define the Instrument table
+Table Instrument_Table {
+  instrument_ID int(PK,2) [primary key, note: "Unique identifier for each instrument"]
+  instrument varchar(30) [note: "Instrument played by the musician"]
+}
+
+// Define the Musician_Instrument junction table
+Table Musician_Instrument_Table {
+  musician_ID int(FK,4) [note: "Foreign key referencing Musicians"]
+  instrument_ID int(FK,2) [note: "Foreign key referencing Instruments"]
+}
+
+// Define the Revenue_Split table
+Table Revenue_Split_Table {
+  revenue_split_ID int(PK,4) [primary key, note: "Unique identifier for each revenue split entry"]
+  event_ID int(FK,4) [note: "Foreign key referencing Events"]
+  performance_ID int(FK,4) [note: "Foreign key referencing Band_Performance"]
+  band_ID int(FK,2) [note: "Foreign key referencing Bands"]
+  musician_ID int(FK,4) [note: "Foreign key referencing Musicians"]
+  merchandise_sales decimal(7, 2) [note: "Total merchandise sales"]
+  ticket_revenue decimal(7, 2) [note: "Total ticket revenue"]
+  is_headliner boolean [note: "Indicates if band was the headliner"]
+  band_revenue_share decimal(7, 2) [note: "Total revenue to be split for each band"]
+  musician_royalty_rate decimal(3, 2) [note: "Royalty rate for each musician"]
+  musician_revenue_earned decimal(10, 2) [note: "Earnings of each musician for each event"]
+}
+
+// Define Relationships
+Ref: Musician_Band_Table.musician_ID > Musicians_Table.musician_ID // Many-to-many relationship between Musicians and Bands
+Ref: Musician_Band_Table.band_ID > Bands_Table.band_ID
+Ref: Events_Table.venue_ID > Venue_Table.venue_ID // Many-to-one relationship between Events and Venues
+Ref: Band_Performance_Table.band_ID > Bands_Table.band_ID // Many-to-one relationship between Band_Performance and Bands
+Ref: Band_Performance_Table.event_ID > Events_Table.event_ID // Many-to-one relationship between Band_Performance and Events
+Ref: Musician_Instrument_Table.musician_ID > Musicians_Table.musician_ID // Many-to-many relationship between Musicians and Instruments
+Ref: Musician_Instrument_Table.instrument_ID > Instrument_Table.instrument_ID
+Ref: Revenue_Split_Table.event_ID > Events_Table.event_ID // Many-to-one relationship between Revenue_Split and Events
+Ref: Revenue_Split_Table.performance_ID > Band_Performance_Table.performance_ID // Many-to-one relationship between Revenue_Split and Band_Performance
+Ref: Revenue_Split_Table.band_ID > Bands_Table.band_ID // Many-to-one relationship between Revenue_Split and Bands
+Ref: Revenue_Split_Table.musician_ID > Musicians_Table.musician_ID // Many-to-one relationship between Revenue_Split and Musicians
